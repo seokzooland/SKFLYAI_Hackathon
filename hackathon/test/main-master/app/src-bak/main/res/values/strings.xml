@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">니편내편</string>
+    <string name="title_activity_membership">MembershipActivity</string>
+    <string name="tab_text_1">GS25</string>
+    <string name="tab_text_2">CU</string>
+    <string name="tab_text_3">세븐일레븐</string>
+    <string name="tab_text_4">이마트24</string>
+</resources>

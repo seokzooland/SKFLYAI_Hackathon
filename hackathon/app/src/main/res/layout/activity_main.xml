@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/mainView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:id="@+id/mapview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="@android:color/white"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/bt_gps"
+            android:layout_width="180px"
+            android:layout_height="150px"
+            android:text="GPS"
+            android:translationX="800px"
+            android:translationY="1500px" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/bt_home"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="left"
+            android:text="홈"
+            />
+
+        <Button
+            android:id="@+id/bt_findfac"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:layout_marginLeft="30px"
+            android:text="안전지킴이" />
+
+        <Button
+            android:id="@+id/bt_find"
+            android:layout_width="104dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="right"
+            android:layout_marginLeft="30px"
+            android:text="안심 귀가" />
+    </LinearLayout>
+
+</LinearLayout>
+
+
+
+
