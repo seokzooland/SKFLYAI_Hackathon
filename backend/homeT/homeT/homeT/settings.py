@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-jae)dh1*zvx0k*p38m02$6^^_8#)*5z6jw(4n067pavgl*)$(#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -77,8 +77,17 @@ WSGI_APPLICATION = 'homeT.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        # sqlite3
+        # 'ENGINE': 'django.db.backends.sqlite3',
+        # 'NAME': BASE_DIR / 'db.sqlite3',
+
+        #mysql
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'homeT',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 

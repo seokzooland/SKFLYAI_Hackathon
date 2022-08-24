@@ -1,3 +1,9 @@
 from django.db import models
+from django.core.validators import MinLengthValidator
 
-# Create your models here.
+
+class Accounts(models.Model):
+    userID = models.CharField(max_length=20, primary_key=True, unique=True)
+    userPW = models.TextField()
+    userName = models.TextField()
+    userBirth = models.IntegerField()
