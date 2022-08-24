@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     // T Map GPS
     private TMapGpsManager tmapgps = null;
 
-
+    private int gpsmode = 0;
     // Marker
     private Bitmap bitmap;
 
@@ -118,8 +118,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         tmapgps.setProvider(tmapgps.NETWORK_PROVIDER); //네트워크 기반의 위치탐색
         //tmapgps.setProvider(tmapgps.GPS_PROVIDER); //위성기반의 위치탐색
         tmapgps.OpenGps();
-
-
     };
 
     private void findPath(){
@@ -209,10 +207,19 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     }
 
     private void gpsview(){
-        TMapPoint tpoint = tmapgps.getLocation();
-        double Latitude = tpoint.getLatitude();
-        double Longitude = tpoint.getLongitude();
-        tmapview.setLocationPoint(Latitude, Longitude);
+        if (gpsmode == 0){
+            tmapview.setTrackingMode(true);
+            tmapview.setSightVisible(true);
+            tmapview.setCompassMode(false);
+        }
+        else {
+            tmapview.setTrackingMode(true);
+            tmapview.setSightVisible(true);
+            /* 현재 보는 방향 */
+            tmapview.setCompassMode(true);
+            gpsmode = 0;
+        }
+
     }
     @Override
     public void onClick(View view){
@@ -230,6 +237,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
             case R.id.bt_gps:
                 /*  화면중심을 단말의 현재위치로 이동 */
                 gpsview();
+                gpsmode++;
                 break;
             }
         }
