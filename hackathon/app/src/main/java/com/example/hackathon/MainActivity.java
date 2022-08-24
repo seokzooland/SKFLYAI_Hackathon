@@ -1,22 +1,14 @@
 package com.example.hackathon;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.skt.Tmap.TMapData;
 import com.skt.Tmap.TMapGpsManager;
@@ -26,13 +18,11 @@ import com.skt.Tmap.TMapPolyLine;
 import com.skt.Tmap.TMapView;
 import com.skt.Tmap.poi_item.TMapPOIItem;
 
-import org.xml.sax.SAXException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
-import java.io.IOException;
-import java.util.AbstractCollection;
 import java.util.ArrayList;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback, View.OnClickListener {
 
@@ -59,7 +49,6 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
     private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
     private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
-    private ArrayList<MapPoint> m_mapPoint = new ArrayList<MapPoint>();
 
     private String address;
     private Double lat = null;
@@ -92,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         bt_fac = (Button) findViewById(R.id.bt_findfac);
         bt_find = (Button) findViewById(R.id.bt_find) ;
         bt_gps = (Button) findViewById(R.id.bt_gps);
+
+
 
         //버튼 리스너 등록
         bt_fac.setOnClickListener(this);
@@ -142,6 +133,22 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tmapview.addTMapPath(polyLine);
             }
         });
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+            @Override
+            public void onFindPathDataAll(Document document) {
+                //System.out.print(document);
+                Element root = document.getDocumentElement();
+                NodeList nodeListPlacemark = root.getElementsByTagName("tmap:totalTime");
+                for( int i=0; i<nodeListPlacemark.getLength(); i++ ) {
+                    NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
+                    String s_pathtime = nodeListPlacemarkItem.item(i).getTextContent();
+                    int i_pathtime = Integer.parseInt(s_pathtime);
+                    System.out.println(i_pathtime/60);
+                        }
+                    }
+        });
+
+
     }
 
     private void searchPOI() {
@@ -200,6 +207,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         return bitmap;
     }
+
     private void gpsview(){
         TMapPoint tpoint = tmapgps.getLocation();
         double Latitude = tpoint.getLatitude();
