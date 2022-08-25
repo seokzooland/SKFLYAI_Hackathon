@@ -2,6 +2,7 @@ package com.example.hackathon;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Location;
@@ -58,7 +59,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     private Button bt_fac;  //주변 안전지킴이 찾기 버튼
     private Button bt_home; //홈
     private Button bt_gps;
-
+    private Button bt_Chatbot; // 챗봇버튼
     @Override
     public void onLocationChange(Location location) {
         if (m_bTrackingMode) {
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
 
         setTMapAuth(); //Tmap 각종 객체 선언
         setGPS(); // GPS 설정
+        out_detect();
         /*  화면중심을 단말의 현재위치로 이동 */
         tmapview.setTrackingMode(true);
         tmapview.setSightVisible(true);
@@ -81,15 +83,14 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         bt_fac = (Button) findViewById(R.id.bt_findfac);
         bt_find = (Button) findViewById(R.id.bt_find) ;
         bt_gps = (Button) findViewById(R.id.bt_gps);
-
-
+        bt_Chatbot = (Button) findViewById(R.id.bt_chatbot);
 
         //버튼 리스너 등록
         bt_fac.setOnClickListener(this);
         bt_find.setOnClickListener(this);
         bt_home.setOnClickListener(this);
         bt_gps.setOnClickListener(this);
-
+        bt_Chatbot.setOnClickListener(this);
     }
 
     private void setTMapAuth()
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
     };
 
     private void findPath(){
-        TMapPoint startpoint = new TMapPoint(37.5248, 127.05); // 입력으로 수정해야함
+        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
         TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
 
         // 보행자 경로 탐색
@@ -144,6 +145,22 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                     System.out.println(i_pathtime/60);
                         }
                     }
+        });
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+            @Override
+            public void onFindPathDataAll(Document document) {
+                Element root = document.getDocumentElement();
+                NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
+                for( int i=0; i<nodeListPlacemark.getLength(); i++ ) {
+                    NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
+                    for ( int j=0; j<nodeListPlacemarkItem.getLength(); j++){
+                        if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")){
+                            String test = nodeListPlacemarkItem.item(j).getTextContent().trim();
+                            System.out.println(test);
+                        }
+                    }
+                }
+            }
         });
 
 
@@ -221,6 +238,12 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
         }
 
     }
+
+    private void out_detect(){
+        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
+        TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
+
+    }
     @Override
     public void onClick(View view){
         switch (view.getId()) {
@@ -239,7 +262,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 gpsview();
                 gpsmode++;
                 break;
+            case R.id.bt_chatbot:
+                 Intent intent_chatbot = new Intent(getApplicationContext(), Chatbot_activity.class);
+                 startActivity(intent_chatbot);
             }
+
         }
 }
 
