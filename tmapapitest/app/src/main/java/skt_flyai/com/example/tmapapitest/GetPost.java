@@ -28,9 +28,14 @@ public class GetPost {
         return userBirth = i;
     }
 
-    public String getID(String s) {
-        return userID = s;
+    public String getID() {
+        return userID;
     }
+
+    public String getName() {
+        return userName;
+    }
+
 
 
 }

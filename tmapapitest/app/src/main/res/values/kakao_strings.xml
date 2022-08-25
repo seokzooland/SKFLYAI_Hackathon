@@ -1,0 +1,5 @@
+<resources>
+    <string name="kakao_app_key">앱만들기 할 때 받은 네이티브 앱키</string>
+    <string name="kakao_scheme">kakao + 앱만들기 할 때 받은 네이티브 앱키</string>
+    <string name="kakaolink_host">kakaolink</string>
+</resources>

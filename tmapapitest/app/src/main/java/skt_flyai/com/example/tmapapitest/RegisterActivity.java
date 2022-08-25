@@ -6,11 +6,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.logging.Handler;
+import java.util.logging.LogRecord;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,13 +27,14 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity{
     private final  String TAG = getClass().getSimpleName();
+    private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     // server의 url을 적어준다
     private final String BASE_URL = "https://8237-39-115-190-39.jp.ngrok.io";
     private Interface mMyAPI;
 
-    private EditText ID, PW, PWCheck, Name, Year, Month, Day;
-    private Button IDCheckButton, RegisterButton;
+    private EditText ID, PW, PWCheck, Name, Year, Month, Day, Address;
+    private Button IDCheckButton, RegisterButton, AddressButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,10 +49,12 @@ public class RegisterActivity extends AppCompatActivity{
         Year = findViewById(R.id.et_year);
         Month = findViewById(R.id.et_month);
         Day = findViewById(R.id.et_day);
+        Address = findViewById(R.id.et_address);
 
-        RegisterButton = findViewById(R.id.btn_login);
+
+        RegisterButton = findViewById(R.id.btn_register);
         IDCheckButton = findViewById(R.id.btn_idck);
-
+        AddressButton = findViewById(R.id.btn_searchAddress);
 
         initMyAPI(BASE_URL);
 
@@ -94,6 +103,33 @@ public class RegisterActivity extends AppCompatActivity{
 //
             }
         });
+
+        AddressButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), AddressActivity.class);
+                startActivityForResult(intent, SEARCH_ADDRESS_ACTIVITY);
+            }
+        });
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        switch (requestCode) {
+
+            case SEARCH_ADDRESS_ACTIVITY:
+
+                if (resultCode == RESULT_OK) {
+
+                    String data = intent.getExtras().getString("data");
+                    if (data != null)
+                        Address.setText(data);
+                }
+                break;
+
+        }
     }
 
     private void initMyAPI(String baseUrl){
