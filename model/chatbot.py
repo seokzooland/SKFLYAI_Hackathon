@@ -12,9 +12,9 @@ class Chatbot:
 
     def __init__(self):
         if torch.cuda.is_available():
-            self.chatbot = SentenceTransformer('./jhgan/ko-sroberta-multitask', device='cuda:0')
+            self.chatbot = SentenceTransformer('jhgan/ko-sroberta-multitask', device='cuda:0')
         else:
-            self.chatbot = SentenceTransformer('./jhgan/ko-sroberta-multitask')
+            self.chatbot = SentenceTransformer('jhgan/ko-sroberta-multitask')
         
         self.dataset = pd.read_csv('./data/dataset.csv')
         self.dataset['embedding'] = self.dataset.Q.map(lambda question: list(self.chatbot.encode(question)))
