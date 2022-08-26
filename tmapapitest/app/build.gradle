@@ -51,4 +51,8 @@ dependencies {
 
     implementation "com.kakao.sdk:v2-user:2.11.0" // 카카오 로그인
     implementation "com.kakao.sdk:v2-talk:2.11.0" // 친구, 메시지(카카오톡)
+
+//    compile fileTree(dir: 'libs', include: ['*.jar'])
+//    compile group: project.KAKAO_SDK_GROUP, name: 'kakaolink', version: project.KAKAO_SDK_VERSION
+//    implementation group: 'com.kakao.sdk', name: 'kakaolink', version: project.KAKAO_SDK_VERSION
 }

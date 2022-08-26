@@ -3,7 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="skt_flyai.com.example.tmapapitest">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:allowBackup="true"
@@ -17,8 +21,30 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".MessageActivity"
+            android:exported="false">
+            <intent-filter android:priority="1">
+                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".HomeActivity"
-            android:exported="false" />
+            android:exported="false">
+
+            <intent-filter>
+
+                <action android:name="android:intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="@string/kakao_scheme"
+
+                    android:host="@string/kakaolink_host"/>
+
+            </intent-filter>
+        </activity>
         <activity
             android:name=".AddressActivity"
             android:exported="false" />
@@ -33,6 +59,11 @@
         </activity>
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity" />
+
+        <meta-data
+            android:name="com.kakao.sdk.AppKey"
+
+            android:value="@string/kakao_app_key" />
     </application>
 
 </manifest>

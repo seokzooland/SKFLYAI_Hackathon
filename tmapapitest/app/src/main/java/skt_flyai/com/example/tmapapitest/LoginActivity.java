@@ -27,7 +27,7 @@ public class LoginActivity extends AppCompatActivity {
     private final  String TAG = getClass().getSimpleName();
 
     // server의 url을 적어준다
-    private final String BASE_URL = "https://729a-121-166-194-82.jp.ngrok.io";
+    private final String BASE_URL = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io";
     private Interface mMyAPI;
 
     EditText ID, PW;
