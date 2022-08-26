@@ -7,3 +7,4 @@ class Accounts(models.Model):
     userPW = models.TextField()
     userName = models.TextField()
     userBirth = models.IntegerField()
+    userAddress = models.TextField(default='집')
