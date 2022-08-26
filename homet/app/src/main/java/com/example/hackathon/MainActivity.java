@@ -252,9 +252,11 @@ public class MainActivity extends AppCompatActivity implements TMapGpsManager.on
                 tmapview.removeTMapPath();
                 break;
             case R.id.bt_findfac:
-                searchPOI();
+                tmapview.removeTMapPath();
+                searchPOI(); // 마커
                 break;
             case R.id.bt_find:
+                tmapview.removeAllMarkerItem();
                 findPath(); // 보행자 경로 탐색
                 break;
             case R.id.bt_gps:

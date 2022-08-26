@@ -39,6 +39,8 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
     ImageButton recordBtn;
     Button bt_TTS;
 
+    private String tts_text;
+
     EditText contents;	//음성을 텍스트로 변환한 결과를 출력할 텍스트뷰
     private TextToSpeech tts;
     @Override
@@ -60,6 +62,7 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
         bt_TTS.setOnClickListener(this);
 
         speechInit();
+        speakOut();
         
         //RecognizerIntent 객체 생성
         intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -86,7 +89,7 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
         sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
 
         // tts 객체 생성, 초기화
-        tts = new TextToSpeech(Chatbot_activity.this, this, "com.google.android.tts");
+        tts = new TextToSpeech(Chatbot_activity.this, this);
     }
     //녹음 시작
     void StartRecord() {
@@ -99,8 +102,6 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
         speechRecognizer=SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
         speechRecognizer.setRecognitionListener(listener);
         speechRecognizer.startListening(intent);
-
-
     }
 
     //녹음 중지
@@ -198,7 +199,6 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
 
             contents.setText( newText + " ");	//기존의 text에 인식 결과를 이어붙임
             speechRecognizer.startListening(intent);    //녹음버튼을 누를 때까지 계속 녹음해야 하므로 녹음 재개
-            speakOut(newText);
         }
 
         @Override
@@ -211,17 +211,26 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
 
         }
     };
+    private void postText(){
+
+    }
+    private void getText(){
+
+    }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void speakOut(String matches){
-        CharSequence text = matches;
-        tts.setPitch((float)3); // 음성 톤 높이
-        tts.setSpeechRate((float)1); // 음성 속도 지정
+    private void speakOut(){
+        if (speechRecognizer!=null){
+            CharSequence text = tts_text;
+            tts.setSpeechRate((float)1); // 음성 속도 지정
 
-        // 첫 번째 매개변수: 음성 출력을 할 텍스트
-        // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
-        //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
+            // 첫 번째 매개변수: 음성 출력을 할 텍스트
+            // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
+            //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
+            StopRecord();
+            tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
+        }
+
     }
     @Override
     public void onClick(View view){
@@ -247,5 +256,19 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
         } else {
             Log.e("TTS", "초기화 실패");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        if(speechRecognizer!=null){
+            speechRecognizer.destroy();
+            speechRecognizer.cancel();
+            speechRecognizer=null;
+        }
+        super.onDestroy();
     }
 }
