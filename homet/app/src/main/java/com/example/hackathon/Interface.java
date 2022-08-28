@@ -14,6 +14,8 @@ public interface Interface
     @POST("accounts/acclist/")
     Call<GetPost> posts(@Body GetPost post );
 
+    @POST("chatbot/stt/")
+    Call<GetPost> stt_Text(@Body GetPost stt_text);
     @GET("/check/")
     Call<GetPost> gets(@Query("userID") String userID);
 

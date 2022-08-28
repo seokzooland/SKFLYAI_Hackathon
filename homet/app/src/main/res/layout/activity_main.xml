@@ -1,72 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/mainView"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F1FAFF"
+    tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/mapview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:background="@android:color/white"
-        android:orientation="vertical">
+    <!--<Button
+        android:id="@+id/btn_register"
+        android:layout_width="260dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="470dp"
+        android:background="@drawable/radius"
+        android:backgroundTint="#5A92FF"
+        android:text="시작하기"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" /> -->
 
-    </LinearLayout>
+    <ImageView
+        android:id="@+id/img_logo"
+        android:layout_width="310dp"
+        android:layout_height="350dp"
+        android:layout_marginTop="168dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo1" />
 
-    <LinearLayout
-        android:layout_width="421dp"
-        android:layout_height="72dp"
-        android:gravity="center"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/bt_chatbot"
-            android:layout_width="180px"
-            android:layout_height="150px"
-            android:text="Chatbot" />
-
-        <Button
-            android:id="@+id/bt_gps"
-            android:layout_width="180px"
-            android:layout_height="150px"
-            android:text="GPS" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/bt_home"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="left"
-            android:text="홈" />
-
-        <Button
-            android:id="@+id/bt_findfac"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_marginLeft="30px"
-            android:text="안전지킴이" />
-
-        <Button
-            android:id="@+id/bt_find"
-            android:layout_width="104dp"
-            android:layout_height="match_parent"
-            android:layout_gravity="right"
-            android:layout_marginLeft="30px"
-            android:text="안심 귀가" />
-    </LinearLayout>
-
-</LinearLayout>
-
-
-
-
+</androidx.constraintlayout.widget.ConstraintLayout>

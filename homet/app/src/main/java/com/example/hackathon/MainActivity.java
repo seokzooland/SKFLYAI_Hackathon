@@ -3,272 +3,120 @@ package com.example.hackathon;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import com.skt.Tmap.TMapData;
-import com.skt.Tmap.TMapGpsManager;
-import com.skt.Tmap.TMapMarkerItem;
-import com.skt.Tmap.TMapPoint;
-import com.skt.Tmap.TMapPolyLine;
-import com.skt.Tmap.TMapView;
-import com.skt.Tmap.poi_item.TMapPOIItem;
+import com.example.hackathon.Interface;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
+import java.util.List;
 
-import java.util.ArrayList;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
-public class MainActivity extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback, View.OnClickListener {
 
-    String API_KEY = "l7xxfdc4f7caa4784dab9cc0280d386ed572";
+public class MainActivity extends AppCompatActivity {
+    private final  String TAG = getClass().getSimpleName();
 
-    // T Map Tracking Mode
-    private boolean m_bTrackingMode = true;
-    // T Map View
-    private TMapView tmapview = null;
+    // server의 url을 적어준다
+    private final String BASE_URL = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io";
+    private Interface mMyAPI;
 
-    private static int mMarkerID;
-
-    // POI 명칭
-    private ArrayList<String> arrBuilding = new ArrayList<>();
-    // T Map Data
-    private TMapData tmapdata = null;
-
-    // T Map GPS
-    private TMapGpsManager tmapgps = null;
-
-    private int gpsmode = 0;
-    // Marker
-    private Bitmap bitmap;
-
-    private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
-    private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
-
-    private String address;
-    private Double lat = null;
-    private Double lon = null;
-
-    private Button bt_find; //주소로 경로 버튼
-    private Button bt_fac;  //주변 안전지킴이 찾기 버튼
-    private Button bt_home; //홈
-    private Button bt_gps;
-    private Button bt_Chatbot; // 챗봇버튼
-    @Override
-    public void onLocationChange(Location location) {
-        if (m_bTrackingMode) {
-            tmapview.setLocationPoint(location.getLongitude(), location.getLatitude());
-        }
-    }
+    EditText ID, PW;
+    Button LoginButton, RegisterButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_login);
 
-        setTMapAuth(); //Tmap 각종 객체 선언
-        setGPS(); // GPS 설정
-        out_detect();
-        /*  화면중심을 단말의 현재위치로 이동 */
-        tmapview.setTrackingMode(true);
-        tmapview.setSightVisible(true);
-        //버튼 선언
-        bt_home = (Button) findViewById(R.id.bt_home);
-        bt_fac = (Button) findViewById(R.id.bt_findfac);
-        bt_find = (Button) findViewById(R.id.bt_find) ;
-        bt_gps = (Button) findViewById(R.id.bt_gps);
-        bt_Chatbot = (Button) findViewById(R.id.bt_chatbot);
+        ID = (EditText) findViewById(R.id.et_id);
+        PW = (EditText) findViewById(R.id.et_pw);
+        // 로그인 버튼
+        LoginButton = (Button) findViewById(R.id.btn_register);
+        // 회원가입 버튼
+        RegisterButton = (Button)findViewById(R.id.btn_goRegister);
 
-        //버튼 리스너 등록
-        bt_fac.setOnClickListener(this);
-        bt_find.setOnClickListener(this);
-        bt_home.setOnClickListener(this);
-        bt_gps.setOnClickListener(this);
-        bt_Chatbot.setOnClickListener(this);
-    }
+        initMyAPI(BASE_URL);
 
-    private void setTMapAuth()
-    {
-        tmapdata = new TMapData(); //POI검색, 경로검색 등의 지도데이터를 관리하는 클래스
-        LinearLayout linearLayout = (LinearLayout) findViewById(R.id.mapview);
-        tmapview = new TMapView(this);
-
-        linearLayout.addView(tmapview);
-        
-        tmapview.setSKTMapApiKey(API_KEY);
-        /* 현위치 아이콘표시 */
-        tmapview.setIconVisibility(true);
-        /* 줌레벨 */
-        tmapview.setZoomLevel(15);
-        /* 지도 타입 */
-        tmapview.setMapType(TMapView.MAPTYPE_STANDARD);
-        /* 언어 설정 */
-        tmapview.setLanguage(TMapView.LANGUAGE_KOREAN);
-    }
-
-    private void setGPS(){
-        tmapgps = new TMapGpsManager(MainActivity.this); //단말의 위치탐색을 위한 클래스
-        tmapgps.setMinTime(1000); //위치변경 인식 최소시간설정
-        tmapgps.setMinDistance(5); //위치변경 인식 최소거리설정
-        tmapgps.setProvider(tmapgps.NETWORK_PROVIDER); //네트워크 기반의 위치탐색
-        //tmapgps.setProvider(tmapgps.GPS_PROVIDER); //위성기반의 위치탐색
-        tmapgps.OpenGps();
-    };
-
-    private void findPath(){
-        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
-        TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
-
-        // 보행자 경로 탐색
-        tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataListenerCallback() {
-            @Override
-            public void onFindPathData(TMapPolyLine polyLine) {
-                tmapview.addTMapPath(polyLine);
+        RegisterButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v){
+                Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+                startActivity(intent);
             }
         });
-        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+
+        // 회원가입 버튼 클릭
+        RegisterButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onFindPathDataAll(Document document) {
-                //System.out.print(document);
-                Element root = document.getDocumentElement();
-                NodeList nodeListPlacemark = root.getElementsByTagName("tmap:totalTime");
-                for( int i=0; i<nodeListPlacemark.getLength(); i++ ) {
-                    NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
-                    String s_pathtime = nodeListPlacemarkItem.item(i).getTextContent();
-                    int i_pathtime = Integer.parseInt(s_pathtime);
-                    System.out.println(i_pathtime/60);
-                        }
-                    }
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+                startActivity(intent);
+            }
         });
-        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+
+        // 로그인 버튼 클릭
+        LoginButton.setOnClickListener(new View.OnClickListener() {
+           @Override
+           public void onClick(View v) {
+               loginMe();
+           }
+       });
+    }
+
+    private void initMyAPI(String baseUrl) {
+        Log.d(TAG,"initMyAPI : " + baseUrl);
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mMyAPI = retrofit.create(Interface.class);
+    }
+
+    private void loginMe() {
+        String userID = ID.getText().toString();
+        String userPW = PW.getText().toString();
+        Call<GetPost> getCall = mMyAPI.gets_accounts_login(userID, userPW);
+
+        getCall.enqueue(new Callback<GetPost>() {
             @Override
-            public void onFindPathDataAll(Document document) {
-                Element root = document.getDocumentElement();
-                NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
-                for( int i=0; i<nodeListPlacemark.getLength(); i++ ) {
-                    NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
-                    for ( int j=0; j<nodeListPlacemarkItem.getLength(); j++){
-                        if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")){
-                            String test = nodeListPlacemarkItem.item(j).getTextContent().trim();
-                            System.out.println(test);
-                        }
-                    }
+            public void onResponse(Call<GetPost> call, Response<GetPost> response) {
+                if( response.isSuccessful()){
+                    String json = new Gson().toJson(response.body());
+                    JsonParser parser = new JsonParser();
+                    JsonElement element = parser.parse(json);
+
+                    String userID = element.getAsJsonObject().get("userID").getAsString();
+                    String userName = element.getAsJsonObject().get("userName").getAsString();
+
+                    Toast.makeText((MainActivity.this), userName + "님 반갑습니다.", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(getApplicationContext(), Home.class);
+
+                    intent.putExtra("userID", userID);
+                    intent.putExtra("userName", userName);
+
+                    startActivity(intent);
+
+                } else {
+                    Toast.makeText(MainActivity.this, "권한이 없습니다", Toast.LENGTH_LONG).show();
                 }
             }
-        });
-
-
-    }
-
-    private void searchPOI() {
-        final TMapData tMapData = new TMapData();
-        final ArrayList<TMapPoint> arrTMapPoint = new ArrayList<>();
-        final ArrayList<String> arrTitle = new ArrayList<>();
-        final ArrayList<String> arrAddress = new ArrayList<>();
-        TMapPoint point = tmapview.getCenterPoint();
-
-        tMapData.findAroundNamePOI(point, "편의점;경찰서", 1, 30, new TMapData.FindAroundNamePOIListenerCallback() {
             @Override
-            public void onFindAroundNamePOI(ArrayList<TMapPOIItem> poiItem) {
-                for(int i = 0; i < poiItem.size(); i++ ){
-                    TMapPOIItem item = poiItem.get(i);
-                    arrTMapPoint.add(item.getPOIPoint());
-                    arrTitle.add(item.getPOIName());
-                    arrAddress.add(item.upperAddrName + " " +
-                            item.middleAddrName + " " + item.lowerAddrName);
-                }
-                setMultiMarkers(arrTMapPoint, arrTitle, arrAddress);
+            public void onFailure(Call<GetPost> call, Throwable t) {
+
             }
         });
-    }
-    private void setMultiMarkers(ArrayList<TMapPoint> arrTPoint, ArrayList<String> arrTitle,
-                                 ArrayList<String> arrAddress)
-    {
-        for( int i = 0; i < arrTPoint.size(); i++ )
-        {
-            Bitmap bitmapIcon = createMarkerIcon(R.drawable.ping);
-
-            TMapMarkerItem tMapMarkerItem = new TMapMarkerItem();
-            tMapMarkerItem.setIcon(bitmapIcon);
-
-            tMapMarkerItem.setTMapPoint(arrTPoint.get(i));
-
-            tmapview.addMarkerItem("markerItem" + i, tMapMarkerItem);
-
-            setBalloonView(tMapMarkerItem, arrTitle.get(i), arrAddress.get(i));
-        }
-    }
-    private void setBalloonView(TMapMarkerItem marker, String title, String address)
-    {
-        marker.setCanShowCallout(true);
-
-        if( marker.getCanShowCallout() )
-        {
-            marker.setCalloutTitle(title);
-            marker.setCalloutSubTitle(address);
-        }
-    }
-    private Bitmap createMarkerIcon(int image)
-    {
-        Bitmap bitmap = BitmapFactory.decodeResource(getApplicationContext().getResources(),
-                image);
-        bitmap = Bitmap.createScaledBitmap(bitmap, 50, 50,false);
-
-        return bitmap;
-    }
-
-    private void gpsview(){
-        if (gpsmode == 0){
-            tmapview.setTrackingMode(true);
-            tmapview.setSightVisible(true);
-            tmapview.setCompassMode(false);
-        }
-        else {
-            tmapview.setTrackingMode(true);
-            tmapview.setSightVisible(true);
-            /* 현재 보는 방향 */
-            tmapview.setCompassMode(true);
-            gpsmode = 0;
-        }
 
     }
-
-    private void out_detect(){
-        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
-        TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
-
-    }
-    @Override
-    public void onClick(View view){
-        switch (view.getId()) {
-            case R.id.bt_home:
-                tmapview.removeAllMarkerItem();
-                tmapview.removeTMapPath();
-                break;
-            case R.id.bt_findfac:
-                tmapview.removeTMapPath();
-                searchPOI(); // 마커
-                break;
-            case R.id.bt_find:
-                tmapview.removeAllMarkerItem();
-                findPath(); // 보행자 경로 탐색
-                break;
-            case R.id.bt_gps:
-                /*  화면중심을 단말의 현재위치로 이동 */
-                gpsview();
-                gpsmode++;
-                break;
-            case R.id.bt_chatbot:
-                 Intent intent_chatbot = new Intent(getApplicationContext(), Chatbot_activity.class);
-                 startActivity(intent_chatbot);
-            }
-
-        }
-}
+};
 

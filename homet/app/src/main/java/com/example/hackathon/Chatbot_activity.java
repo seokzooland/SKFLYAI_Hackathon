@@ -28,46 +28,46 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
-public class Chatbot_activity extends AppCompatActivity implements View.OnClickListener, TextToSpeech.OnInitListener {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.http.GET;
 
+public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.OnInitListener {
+
+    private final  String TAG = getClass().getSimpleName();
     Intent intent;
     SpeechRecognizer speechRecognizer;
     final int PERMISSION = 1;	//permission 변수
 
-    boolean recording = false;  //현재 녹음중인지 여부
+    private final String BASE_URL = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io";
+    private Interface mMyAPI;
+
+    boolean recording = true;  //현재 녹음중인지 여부
     TextView recordTextView;
-    ImageButton recordBtn;
     Button bt_TTS;
 
-    private String tts_text;
 
-    EditText contents;	//음성을 텍스트로 변환한 결과를 출력할 텍스트뷰
+    private String tts_text;
+    private String stt_Text;
     private TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chatbot);
 
+        initMyAPI(BASE_URL);
+
         CheckPermission();  //녹음 퍼미션 체크
 
+
         //UI
-        recordBtn = findViewById(R.id.recordBtn);
         recordTextView=findViewById(R.id.recordTextView);
-        contents=findViewById(R.id.contentsTextView);
-        bt_TTS = (Button) findViewById(R.id.bt_tts);
 
-
-        //버튼 클릭 이벤트 리스터 등록
-        recordBtn.setOnClickListener(this);
-        bt_TTS.setOnClickListener(this);
-
+        StartRecord();
         speechInit();
-        speakOut();
-        
-        //RecognizerIntent 객체 생성
-        intent=new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getPackageName());
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");   //한국어
     }
     void CheckPermission() {
         //안드로이드 버전이 6.0 이상
@@ -81,39 +81,48 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
             }
         }
     }
+    private void initMyAPI(String baseUrl){
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(baseUrl)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        mMyAPI = retrofit.create(Interface.class);
+    }
 
     private void speechInit() {
-        // stt 객체 생성, 초기화
-        Intent sttIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        sttIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
-        sttIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR");
 
         // tts 객체 생성, 초기화
         tts = new TextToSpeech(Chatbot_activity.this, this);
     }
     //녹음 시작
     void StartRecord() {
+        // RecognizerIntent 생성
+        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,getPackageName()); // 여분의 키
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE,"ko-KR"); // 언어 설정
         recording = true;
 
+        if (recording){
+            Toast.makeText(getApplicationContext(), "음성 기록을 시작합니다.", Toast.LENGTH_SHORT).show();
+        }
         //마이크 이미지와 텍스트 변경
-        recordBtn.setImageResource(R.drawable.stop_record);
-        recordTextView.setText("음성 녹음 중지");
-
         speechRecognizer=SpeechRecognizer.createSpeechRecognizer(getApplicationContext());
         speechRecognizer.setRecognitionListener(listener);
         speechRecognizer.startListening(intent);
+
+
     }
 
     //녹음 중지
     void StopRecord() {
         recording = false;
 
-        //마이크 이미지와 텍스트 변경
-        recordBtn.setImageResource(R.drawable.start_record);
-        recordTextView.setText("음성 녹음 시작");
-
         speechRecognizer.stopListening();   //녹음 중지
         Toast.makeText(getApplicationContext(), "음성 기록을 중지합니다.", Toast.LENGTH_SHORT).show();
+
+        speakOut(stt_Text);
     }
     RecognitionListener listener = new RecognitionListener() {
         @Override
@@ -138,6 +147,7 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
 
         @Override
         public void onEndOfSpeech() {
+            speechRecognizer.stopListening();
             //사용자가 말을 멈추면 호출
             //인식 결과에 따라 onError나 onResults가 호출됨
         }
@@ -189,16 +199,39 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
         //인식 결과가 준비되면 호출
         @Override
         public void onResults(Bundle bundle) {
+
             ArrayList<String> matches = bundle.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);	//인식 결과를 담은 ArrayList
 
             //인식 결과
-            String newText="";
+            stt_Text="";
             for (int i = 0; i < matches.size() ; i++) {
-                newText += matches.get(i);
+                stt_Text += matches.get(i);
             }
+            /* GetPost stt_item = new GetPost();
+            stt_item.stt_Text(stt_Text);
 
-            contents.setText( newText + " ");	//기존의 text에 인식 결과를 이어붙임
-            speechRecognizer.startListening(intent);    //녹음버튼을 누를 때까지 계속 녹음해야 하므로 녹음 재개
+            Call<GetPost> stt_Call = mMyAPI.stt_Text(stt_item);
+
+            stt_Call.enqueue(new Callback<GetPost>() {
+                @Override
+                public void onResponse(Call<GetPost> call, Response<GetPost> response) {
+                    if (response.isSuccessful()){
+                        Log.d(TAG, String.format("난 위너야: {%s}", response));
+                        speakOut();
+                    }
+                    else{
+
+                        Log.d(TAG, String.format("난 루저야: {%s}", response));
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<GetPost> call, Throwable t) {
+                    Log.d(TAG, String.format("난 텅비었어"));
+                }
+            }); */
+               //녹음버튼을 누를 때까지 계속 녹음해야 하므로 녹음 재개
+
         }
 
         @Override
@@ -219,40 +252,23 @@ public class Chatbot_activity extends AppCompatActivity implements View.OnClickL
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    private void speakOut(){
-        if (speechRecognizer!=null){
-            CharSequence text = tts_text;
-            tts.setSpeechRate((float)1); // 음성 속도 지정
-
-            // 첫 번째 매개변수: 음성 출력을 할 텍스트
-            // 두 번째 매개변수: 1. TextToSpeech.QUEUE_FLUSH - 진행중인 음성 출력을 끊고 이번 TTS의 음성 출력
-            //                 2. TextToSpeech.QUEUE_ADD - 진행중인 음성 출력이 끝난 후에 이번 TTS의 음성 출력
-            StopRecord();
+    private void speakOut(String stt_Text){
+        tts_text = stt_Text;
+        CharSequence text = tts_text;
+        //tts_text = response;
+        if (recording = true){
             tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, "id1");
         }
-
-    }
-    @Override
-    public void onClick(View view){
-        switch (view.getId()) {
-            case R.id.recordBtn:
-                if (!recording) {   //녹음 시작
-                    StartRecord();
-                    Toast.makeText(getApplicationContext(), "지금부터 음성으로 기록합니다.", Toast.LENGTH_SHORT).show();
-                }
-                else {  //이미 녹음 중이면 녹음 중지
-                    StopRecord();
-                }
-                break;
-        }
-
+        speechRecognizer.startListening(intent);
     }
 
     @Override
     public void onInit(int status) {
         if (status == TextToSpeech.SUCCESS) {
+
             tts.setLanguage(Locale.KOREAN);
             tts.setPitch(1);
+            tts.setSpeechRate(1); // 음성 속도 지정
         } else {
             Log.e("TTS", "초기화 실패");
         }
