@@ -21,4 +21,5 @@ from rest_framework import routers
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
+    path('chatbot/', include('chatbot.urls')),
 ]
