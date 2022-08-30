@@ -16,6 +16,7 @@ public interface Interface
 
     @POST("chatbot/stt/")
     Call<GetPost> stt_Text(@Body GetPost stt_text);
+
     @GET("/check/")
     Call<GetPost> gets(@Query("userID") String userID);
 

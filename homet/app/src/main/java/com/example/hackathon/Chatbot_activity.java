@@ -42,7 +42,7 @@ public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.
     SpeechRecognizer speechRecognizer;
     final int PERMISSION = 1;	//permission 변수
 
-    private final String BASE_URL = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io";
+    private final String BASE_URL = "http://20.249.89.149:8000";
     private Interface mMyAPI;
 
     boolean recording = true;  //현재 녹음중인지 여부
@@ -207,7 +207,7 @@ public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.
             for (int i = 0; i < matches.size() ; i++) {
                 stt_Text += matches.get(i);
             }
-            /* GetPost stt_item = new GetPost();
+            GetPost stt_item = new GetPost();
             stt_item.stt_Text(stt_Text);
 
             Call<GetPost> stt_Call = mMyAPI.stt_Text(stt_item);
@@ -216,8 +216,8 @@ public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.
                 @Override
                 public void onResponse(Call<GetPost> call, Response<GetPost> response) {
                     if (response.isSuccessful()){
-                        Log.d(TAG, String.format("난 위너야: {%s}", response));
-                        speakOut();
+                        Log.d(TAG, String.format("난 위너야: {%s}", response.body().getStt_Text()));
+                        speakOut(response.body().getStt_Text());
                     }
                     else{
 
@@ -229,7 +229,7 @@ public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.
                 public void onFailure(Call<GetPost> call, Throwable t) {
                     Log.d(TAG, String.format("난 텅비었어"));
                 }
-            }); */
+            });
                //녹음버튼을 누를 때까지 계속 녹음해야 하므로 녹음 재개
 
         }

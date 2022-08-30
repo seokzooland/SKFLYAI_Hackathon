@@ -168,7 +168,7 @@ public class RegisterActivity extends AppCompatActivity{
         item.postID(userID);
         item.postPW(userPW);
         item.postName(userName);
-        item.postBirth(userBirth);
+        //item.postBirth(userBirth);
         item.postAddress(userAddress);
 
         Call<GetPost> postCall = mMyAPI.posts(item);

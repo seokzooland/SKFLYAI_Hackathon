@@ -13,14 +13,15 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -36,7 +37,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
 
 public class Home extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback, View.OnClickListener {
 
@@ -59,18 +63,19 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     private TMapGpsManager tmapgps = null;
 
     private boolean gpsmode = true;
-    // Marker
-    private Bitmap bitmap;
 
-    private ArrayList<TMapPoint> m_tmapPoint = new ArrayList<TMapPoint>();
-    private ArrayList<String> mArrayMarkerID = new ArrayList<String>();
+    private Handler handler;
+    private Thread thread;
 
-    private String address;
+    boolean isRun = true;
+
+    private String userAddress;
     private Double lat = null;
     private Double lon = null;
+    private Double get_distance = 0.0;
 
     private ImageButton bt_find; //주소로 경로 버튼
-    boolean find_mode = false;
+    static boolean find_mode = true;
     private ImageButton bt_fac;  //주변 안전지킴이 찾기 버튼
     boolean fac_mode = false;
     private ImageButton bt_home; //홈
@@ -78,6 +83,15 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     private ImageButton bt_gps;
     boolean gps_mode = false;
     private ImageButton bt_Chatbot; // 챗봇버튼
+    private ImageButton bt_user;
+
+    private AlertDialog.Builder builder;
+
+    private double end_lat;
+    private double end_lon;
+
+    // 경로이탈 카운트
+    static int count = 0;
 
     @Override
     public void onLocationChange(Location location) {
@@ -96,13 +110,18 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             checkRunTimePermission();
         }
 
+        Intent intent = getIntent();
+        userAddress = intent.getStringExtra("userAddress");
+        //경로이탈 푸쉬알림
+        builder = new AlertDialog.Builder(Home.this);
+
         setTMapAuth(); //Tmap 각종 객체 선언
         setGPS(); // GPS 설정
-        out_detect();
+        setThread();
+
         /*  화면중심을 단말의 현재위치로 이동 */
         tmapview.setTrackingMode(true);
         tmapview.setSightVisible(true);
-
 
         //버튼 선언
         bt_home = (ImageButton) findViewById(R.id.bt_home);
@@ -110,15 +129,19 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         bt_find = (ImageButton) findViewById(R.id.bt_find);
         bt_gps = (ImageButton) findViewById(R.id.bt_gps);
         bt_Chatbot = (ImageButton) findViewById(R.id.chatbot);
+        bt_user = (ImageButton) findViewById(R.id.bt_user);
 
         bt_gps.bringToFront();
         bt_Chatbot.bringToFront();
+
         //버튼 리스너 등록
         bt_fac.setOnClickListener(this);
         bt_find.setOnClickListener(this);
         bt_home.setOnClickListener(this);
         bt_gps.setOnClickListener(this);
         bt_Chatbot.setOnClickListener(this);
+        bt_user.setOnClickListener(this);
+
     }
 
     private void setTMapAuth() {
@@ -263,17 +286,30 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             }
         }
     }
-
     private void findPath() {
         tmapview.removeAllMarkerItem();
+        System.out.println(userAddress);
+
+        Geocoder geocoder = new Geocoder(this);
+        List<Address> userlist = null;
+        try{
+            userlist = geocoder.getFromLocationName(userAddress, 1);
+        } catch (IOException e){
+            e.printStackTrace();
+            Log.e("test","입출력 오류 - 서버에서 주소변환시 에러발생");
+        }
+
+        Address end_address = userlist.get(0);
+        end_lat = end_address.getLatitude();
+        end_lon = end_address.getLongitude();
 
         bt_home.setImageResource(R.drawable.home_off);
         bt_find.setImageResource(R.drawable.find_on);
         bt_fac.setImageResource(R.drawable.poi);
-
-        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
-        TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
-
+//        TMapPoint startpoint = new TMapPoint(37.570841, 126.985302);
+        //TMapPoint endpoint = new TMapPoint(37.670841, 126.105302);
+        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야
+        TMapPoint endpoint = new TMapPoint(end_lat, end_lon);
         // 보행자 경로 탐색
         tmapdata.findPathDataWithType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataListenerCallback() {
             @Override
@@ -293,28 +329,86 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                     NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
                     String s_pathtime = nodeListPlacemarkItem.item(i).getTextContent();
                     int i_pathtime = Integer.parseInt(s_pathtime);
-                    System.out.println(i_pathtime / 60);
+                    //System.out.println(i_pathtime / 60);
                 }
             }
         });
-        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+
+        thread.start();
+    }
+
+    public void anomalyDetection(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
+        builder.setTitle("낙상 감지");
+        builder.setMessage("낙상이 감지되었습니다. 괜찮으신가요?");
+        builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
-            public void onFindPathDataAll(Document document) {
-                Element root = document.getDocumentElement();
-                NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
-                for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
-                    NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
-                    for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
-                        if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")) {
-                            String test = nodeListPlacemarkItem.item(j).getTextContent().trim();
-                            System.out.println(test);
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"Clicked Yes",Toast.LENGTH_LONG);
+                findPath();
+            }
+        });
+        builder.setNegativeButton("아니오", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Toast.makeText(getApplicationContext(),"Clicked No", Toast.LENGTH_SHORT).show();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alertD = builder.create();
+        alertD.show();
+    }
+    public void getDistance() {
+//      TMapPoint startpoint = new TMapPoint(37.570841, 126.985302);
+        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야
+        TMapPoint endpoint = new TMapPoint(end_lat, end_lon);
+
+        TMapPoint mygps = tmapgps.getLocation();
+        final ArrayList<TMapPoint> arrTMapPoint = new ArrayList<>();
+        tmapdata.findPathDataAllType(TMapData.TMapPathType.PEDESTRIAN_PATH, startpoint, endpoint, new TMapData.FindPathDataAllListenerCallback() {
+                    @Override
+                    public void onFindPathDataAll(Document document) {
+                        Element root = document.getDocumentElement();
+                        NodeList nodeListPlacemark = root.getElementsByTagName("Placemark");
+                        for (int i = 0; i < nodeListPlacemark.getLength(); i++) {
+                            NodeList nodeListPlacemarkItem = nodeListPlacemark.item(i).getChildNodes();
+                            for (int j = 0; j < nodeListPlacemarkItem.getLength(); j++) {
+                                if (nodeListPlacemarkItem.item(j).getNodeName().equals("Point")) {
+                                    String[] test = nodeListPlacemarkItem.item(j).getTextContent().trim().split(",");
+                                    double path_lon = Double.parseDouble(test[0]);
+                                    double path_lat = Double.parseDouble(test[1]);
+                                    TMapPoint path_list = new TMapPoint(path_lat, path_lon);
+                                    arrTMapPoint.add(path_list);
+                                }
+                            }
+                        }
+                        for (int i = 0; i < arrTMapPoint.size(); i++) {
+                            double path_lon = arrTMapPoint.get(i).getLongitude();
+                            double path_lat = arrTMapPoint.get(i).getLatitude();
+
+                            Location mgps = new Location("My_gps");
+                            Location safe = new Location("Safe");
+
+                            mgps.setLatitude(mygps.getLatitude());
+                            mgps.setLongitude(mygps.getLongitude());
+                            safe.setLatitude(path_lat);
+                            safe.setLongitude(path_lon);
+
+                            double distance = mgps.distanceTo(safe);
+                            System.out.println(distance);
+                            //.out.println("밖에서" + count);
+                            if (distance < 100.0) {
+                                //System.out.println("안에서" + count);
+                                count++;
+                            }
+                            else{
+                                //System.out.println("이건?");
+                            }
                         }
                     }
                 }
-            }
-        });
-
-
+        );
     }
 
     private void searchPOI() {
@@ -323,6 +417,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         bt_home.setImageResource(R.drawable.home_off);
         bt_find.setImageResource(R.drawable.find);
         bt_fac.setImageResource(R.drawable.poi_on);
+
 
         final TMapData tMapData = new TMapData();
         final ArrayList<TMapPoint> arrTMapPoint = new ArrayList<>();
@@ -396,12 +491,6 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
 
     }
 
-    private void out_detect() {
-        TMapPoint startpoint = tmapgps.getLocation(); // 입력으로 수정해야함
-        TMapPoint endpoint = new TMapPoint(37.510350, 127.066847); // 입력으로 수정해야함
-
-    }
-
     public void setBt_home(){
         bt_home.setImageResource(R.drawable.home_on);
         bt_find.setImageResource(R.drawable.find);
@@ -415,14 +504,14 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         switch (view.getId()) {
             case R.id.bt_home:
                 setBt_home();
-
                 break;
             case R.id.bt_findfac:
                 tmapview.removeTMapPath();
                 searchPOI(); // 마커
                 break;
             case R.id.bt_find:
-                findPath(); // 보행자 경로 탐색
+                setThread();
+                findPath();
                 break;
             case R.id.bt_gps:
                 /*  화면중심을 단말의 현재위치로 이동 */
@@ -432,8 +521,41 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 Intent intent_chatbot = new Intent(getApplicationContext(), Chatbot_activity.class);
                 startActivity(intent_chatbot);
                 break;
+            case R.id.bt_user:
+                Intent intent_menu = new Intent(getApplicationContext(), UserActivity.class);
         }
+    }
 
+    private void setThread(){
+        handler = new Handler();
+        thread = new Thread(new Runnable() {
+
+            Runnable outpath = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        getDistance();
+                        Thread.sleep(5000);
+                        if (count==100){
+                            anomalyDetection();
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            };
+            @Override
+            public void run() {
+                try {
+                    while(isRun) {
+                        handler.post(outpath);
+                    }
+                }catch(Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }
 

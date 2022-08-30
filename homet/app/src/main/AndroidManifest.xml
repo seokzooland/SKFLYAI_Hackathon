@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.hackathon">
+    package="com.example.hackathon" >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -26,30 +26,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Hackathon"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="31" >
+
+        <activity
+            android:name=".UserActivity"
+            android:exported="false" />
         <activity
             android:name=".MessageActivity"
-            android:exported="false">
-            <intent-filter android:priority="1">
+            android:exported="false" >
+            <intent-filter android:priority="1" >
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </activity>
         <activity
             android:name=".HomeActivity"
-            android:exported="false">
-
+            android:exported="false" >
             <intent-filter>
-
                 <action android:name="android:intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
-
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data android:scheme="@string/kakao_scheme"
-
-                    android:host="@string/kakaolink_host"/>
-
+                <data
+                    android:host="@string/kakaolink_host"
+                    android:scheme="@string/kakao_scheme" />
             </intent-filter>
         </activity>
         <activity
@@ -57,18 +57,15 @@
             android:exported="false" />
         <activity
             android:name=".SplashActivity"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".MainActivity"></activity>
-        <!--<activity android:name=".LoginActivity" /> -->
+        <activity android:name=".MainActivity" /> <!-- <activity android:name=".LoginActivity" /> -->
         <activity android:name=".RegisterActivity" />
-
         <activity
             android:name=".ttsChatbot_activity"
             android:exported="false" />
@@ -77,11 +74,11 @@
             android:exported="false" />
         <activity
             android:name=".Home"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
+
         <meta-data
             android:name="com.kakao.sdk.AppKey"
-
             android:value="@string/kakao_app_key" />
     </application>
+
 </manifest>

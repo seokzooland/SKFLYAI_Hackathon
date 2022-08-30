@@ -11,7 +11,7 @@ public class GetPost {
 
     private String userName;
 
-    private int userBirth;
+   // private int userBirth;
 
     private String userAddress;
 
@@ -31,10 +31,10 @@ public class GetPost {
         return userName = s;
     }
 
-    public int postBirth(int i) {
+    /* public int postBirth(int i) {
 
         return userBirth = i;
-    }
+    } */
 
     public String postAddress(String s) {
 
@@ -51,8 +51,12 @@ public class GetPost {
         return userName;
     }
 
-    public String stt_Text(String s){
-        return stt_Text = s;
+    public void stt_Text(String s){
+         stt_Text = s;
+    }
+
+    public String getStt_Text(){
+        return stt_Text;
     }
 
 }
