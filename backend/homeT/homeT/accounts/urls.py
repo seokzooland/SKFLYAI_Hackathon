@@ -1,5 +1,5 @@
 from rest_framework import routers
-from django.urls import path, include, re_path
+from django.urls import path, include
 from .views import AccountViewSet, AccountCheck, address_search
 
 router = routers.DefaultRouter()
