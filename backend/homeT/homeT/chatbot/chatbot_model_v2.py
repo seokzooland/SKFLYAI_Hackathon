@@ -22,7 +22,7 @@ def chatbot_model5(text):
     with torch.no_grad():
         a = ""
         while 1:
-            input_ids = torch.LongTensor(koGPT2_TOKENIZER.encode(Q_TKN + text + A_TKN + text)).unsqueeze(dim=0)
+            input_ids = torch.LongTensor(koGPT2_TOKENIZER.encode(Q_TKN + text + A_TKN + a)).unsqueeze(dim=0)
             pred = torch_model5(input_ids)
             pred = pred.logits
             gen = koGPT2_TOKENIZER.convert_ids_to_tokens(torch.argmax(pred, dim=-1).squeeze().numpy().tolist())[-1]
@@ -31,7 +31,7 @@ def chatbot_model5(text):
             a += gen.replace("▁", " ")
             input_ids = tokenizer.encode(a)
             gen_ids = torch_model5.generate(torch.tensor([input_ids]),
-                                            max_length=8,
+                                            max_length=16,
                                             min_length=4,
                                             num_bins=1,
                                             repetition_penalty=2.0,
@@ -42,4 +42,4 @@ def chatbot_model5(text):
             generated = tokenizer.decode(gen_ids[0, :].tolist())
         # print("Chatbot > {}".format(a.strip()))
         print("Chatbot > {}".format(generated.strip()))
-        return a
+        return generated
