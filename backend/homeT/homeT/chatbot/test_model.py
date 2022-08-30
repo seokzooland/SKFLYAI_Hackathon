@@ -13,7 +13,7 @@ koGPT2_TOKENIZER = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2",
                                                            bos_token=BOS, eos_token=EOS, unk_token='<unk>',
                                                            pad_token=PAD, mask_token=MASK)
 model = GPT2LMHeadModel.from_pretrained('skt/kogpt2-base-v2')
-torch_model = GPT2LMHeadModel.from_pretrained('/Users/seokzooland/work/model.pt')
+torch_model = GPT2LMHeadModel.from_pretrained('/home/szland/model.pt')
 tokenizer = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2", bos_token='</s>', eos_token='</s>',
                                                     unk_token='<unk>', pad_token='<pad>', mask_token='<mask>')
 

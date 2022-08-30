@@ -21,4 +21,4 @@ class AccountCheck(viewsets.ModelViewSet):
 
 
 def address_search(request):
-    return FileResponse(as_attachment=True, filename="index.html")
+    return render(request, "address.html")
