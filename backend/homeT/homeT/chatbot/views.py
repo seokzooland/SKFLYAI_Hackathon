@@ -13,5 +13,4 @@ def stt_response(request):
         data = request.data
         print(data)
         data['stt_Text'] = chatbot_model5(data['stt_Text'])
-        print(data)
         return Response(data, status=status.HTTP_200_OK)

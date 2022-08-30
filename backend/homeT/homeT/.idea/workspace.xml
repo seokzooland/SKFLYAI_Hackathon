@@ -7,7 +7,6 @@
     <list default="true" id="e567b8b9-efed-4e1a-ad55-bbb4f709c0bb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chatbot/chatbot_model_v2.py" beforeDir="false" afterPath="$PROJECT_DIR$/chatbot/chatbot_model_v2.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/chatbot/test_model.py" beforeDir="false" afterPath="$PROJECT_DIR$/chatbot/chatbot_model_v1.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/chatbot/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/chatbot/views.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -92,7 +91,7 @@
       <updated>1661742397258</updated>
       <workItem from="1661742398455" duration="14290000" />
       <workItem from="1661819206634" duration="1165000" />
-      <workItem from="1661823623025" duration="6094000" />
+      <workItem from="1661823623025" duration="7006000" />
     </task>
     <servers />
   </component>
