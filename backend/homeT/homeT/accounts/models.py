@@ -8,3 +8,5 @@ class Accounts(models.Model):
     userName = models.TextField()
     userBirth = models.IntegerField()
     userAddress = models.TextField(default='집')
+    userPhone = models.CharField(max_length=20)
+    parentsPhone = models.CharField(max_length=20)
