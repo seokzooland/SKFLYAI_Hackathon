@@ -19,7 +19,7 @@ class Chatbot:
         self.koGPT2_TOKENIZER = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2",
                                                                         bos_token=BOS, eos_token=EOS, unk_token='<unk>',
                                                                         pad_token=PAD, mask_token=MASK)
-        self.torch_model5 = GPT2LMHeadModel.from_pretrained('/home/szland/model.pt')
+        self.torch_model5 = GPT2LMHeadModel.from_pretrained('/home/szland/model5.pt')
 
     def answer(self, question):
         with torch.no_grad():

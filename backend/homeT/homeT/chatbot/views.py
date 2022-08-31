@@ -4,12 +4,14 @@ from rest_framework.decorators import api_view
 from .chatbot_model_v5 import Chatbot
 
 
+chatbot = Chatbot()
+
+
 @api_view(['POST'])
 def stt_response(request):
     if request.method == 'GET':
         print('GET Accepted')
     elif request.method == 'POST':
-        chatbot = Chatbot()
         data = request.data
         print(data)
         data['stt_Text'] = chatbot.answer(data['stt_Text'])
