@@ -112,7 +112,6 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("userAddress", userAddress);
                     intent.putExtra("parentsPhone", parentsPhone);
 
-
                     startActivity(intent);
 
                 } else {

@@ -53,11 +53,11 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class Home extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback, View.OnClickListener , SensorEventListener {
+public class Home extends AppCompatActivity implements TMapGpsManager.onLocationChangedCallback, View.OnClickListener , SensorEventListener{
 
     private final  String TAG = getClass().getSimpleName();
 
-    String API_KEY = "l7xx0042976395884c2186ea0a2fbb1835bd";
+    String API_KEY = "l7xxf6f2a8d1177e4fcda307e964108a8fb0";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.INTERNET, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE,
@@ -136,7 +136,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         if (!checkLocationServicesStatus()) {
@@ -380,15 +380,9 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         builder.setPositiveButton("예", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                myThread.cancel(true);
-                Log.d("", "onClick: Yes");
+                isRun = false;
                 flag_out.set(1);
                 Toast.makeText(getApplicationContext(),"Clicked Yes",Toast.LENGTH_LONG);
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 setBt_home();
             }
         });
@@ -399,7 +393,6 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 isRun = true;
                 flag_out.set(1);
                 Toast.makeText(getApplicationContext(),"Clicked No", Toast.LENGTH_SHORT).show();
-
                 findPath();
             }
         });
@@ -536,7 +529,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
 
     }
     public void setBt_home(){
-        isRun = false;
+
         bt_home.setImageResource(R.drawable.home_on);
         bt_find.setImageResource(R.drawable.find);
         bt_fac.setImageResource(R.drawable.poi);
@@ -564,41 +557,6 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 findPath();
                 myThread = (MyThread) new MyThread();
                 myThread.execute();
-//                Thread thread = new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        while (isRun){
-//                            handler.post(new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    TMapPoint mygps = tmapgps.getLocation();
-//
-//                                    lon = mygps.getLongitude();
-//                                    lat = mygps.getLatitude();
-//
-//                                    String TAG = "";
-//                                    Log.d(TAG, lat.toString() + lon.toString());
-////                                    getDistance();
-//                                    try {
-//                                        Thread.sleep(5000);
-//                                    } catch (InterruptedException e) {
-//                                        e.printStackTrace();
-//                                    }
-//                                    System.out.println(count);
-////                                    if (count ==0){
-////                                        System.out.println("경로이탈 감지");
-////                                        anomalyDetection();
-////                                    }else{
-////                                        count = 0;
-////                                    }
-//
-//                                }
-//                            });
-//                        }
-//                    }
-//                });
-//                thread.setDaemon(true);
-//                thread.start();
                 break;
             case R.id.bt_gps:
                 /*  화면중심을 단말의 현재위치로 이동 */
@@ -616,7 +574,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     private String getTime() {
         long now = System.currentTimeMillis();
         Date date = new Date(now);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("k시 mm분 ss초");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("k시 mm분");
         String getTime = dateFormat.format(date);
 
         return getTime;
@@ -652,7 +610,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             }
         };
         Log.d(TAG,"i_pathtime : " + i_pathtime);
-        timer.schedule(task, i_pathtime*100 + 10000);
+        timer.schedule(task, i_pathtime*10 + 10000);
     }
     // 타이머 알림
     public TimerTask Dialog(){
@@ -663,6 +621,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         builder.setPositiveButton("종료", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                isRun = false;
                 flag_timer.set(1);
                 Log.d(TAG, "타이머 응답 제발 plz plz : " + flag_timer.get());
                 Toast.makeText(getApplicationContext(),"Clicked Yes",Toast.LENGTH_LONG);
@@ -674,7 +633,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             public void onClick(DialogInterface dialog, int which) {
                 flag_timer.set(1);
                 Toast.makeText(getApplicationContext(),"Clicked No", Toast.LENGTH_SHORT).show();
-                startTimer();
+//                startTimer();
                 dialog.cancel();
             }
         });
@@ -695,27 +654,29 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 Log.d(TAG, "이탈 감지    "  + flag_out.get());
                 Log.d(TAG, "시간 오바    "  + flag_timer.get());
 
-                // 타이머
+//                 타이머
                 if (flag_timer.get() == 0){
-                    String message = "[" + getTime() +  "]\n" + userName + "님의 귀가 예상 시간이 초과한 지 5분이 지났습니다.\n 현재 " + userName + "님의 위치는 " +  address+ "입니다.";
+                    isRun = false;
+                    String message = "귀가 예상 시간이 초과한 지 5분이 지났습니다. 현재 " + userName + "님의 위치는 " +  address+ "입니다.";
                     Message(message);
+                    flag_timer.set(1);
                 }
                 else if (flag_timer.get() == 1){
-                    flag_timer.set(1);
                     //Log.d(TAG, "10초 지나고 yes 버튼 누르고 나서 다시 0으로 바꿈" + flag_timer.get());
                     flag_out.set(1);
                 }
-                // 경로이탈
+//                 경로이탈
                 if (flag_out.get() == 0){
-                    String message = "[" + getTime() +  "]\n" + userName + "님의 귀가 중 경로 이탈한지 5분이 지났습니다.\n 현재 " + userName + "님의 위치는 " +  address+ "입니다.";;
+                    isRun = false;
+                    String message = "현재 경로이탈 했습니다. " + userName + "님의 위치는 " +  address+ "입니다.";;
                     Message(message);
                     flag_out.set(1);
                 }
                 else if (flag_out.get() == 1){
-                    flag_out.set(1);
                     //Log.d(" ", "10초 지나고 yes 버튼 누르고 나서 다시 0으로 바꿈" + flag_out.get());
                 }
                 if (flag_naksang.get() == 0){
+                    isRun = false;
                     String message = "[" + getTime() +  "]\n" + userName + "님이 " + address + "에서 낙상이 감지된 후 10분이 경과하였습니다.";
                     Message(message);
                     flag_naksang.set(1);
@@ -734,10 +695,11 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             while(isRun){
                 count = 0;
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
+                TimerResponse();
                 mygpspoint = tmapgps.getLocation();
 
                 lat = mygpspoint.getLatitude();
@@ -760,8 +722,11 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 publishProgress(count);
                 Log.d(TAG, lat.toString() +"   "+ lon.toString()+"   "+ count);
 
-                Log.d(TAG, Double.toString(flag_naksang.get()) + Double.toString(flag_timer.get()) + Double.toString(flag_out.get()));
+                Log.d(TAG, Double.toString(flag_timer.get())+"  "+ Double.toString(flag_out.get()));
 
+                if (isRun == false){
+                    break;
+                }
             }
             return count;
         }
@@ -775,13 +740,14 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                     TimerResponse();
                 }
             }
-            if (flag_timer.get() ==0){
+            if (flag_timer.get() == 0){
                 TimerResponse();
             }
         }
         protected void onPostExecute(Integer result) {
 
         }
+
     }
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
@@ -812,13 +778,6 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                         String noBtn = "";
                         Alert(title, message, yesBtn, noBtn);
                         TimerResponse();
-                        //Log.d(TAG, "응답 좀 제발 : " + flag_naksang.get());
-                        //Log.d(TAG, "if문 들어가기 전" + flag_naksang.get());
-                        if (flag_naksang.get() == 1) {
-                            Log.d(TAG, "Timer 밑 if 문" + flag_naksang.get());
-                            flag_naksang.set(0);
-                            Log.d(TAG, "if 문 안에서 0으로 세팅" + flag_naksang.get());
-                        }
                     }
                     break;
                 }
@@ -850,12 +809,10 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     public void Alert(String title, String message, String yesBtn, String noBtn) {
         // 낙상 감지 알림
         AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-//        builder.setTitle("낙상 감지");
-//        builder.setMessage("[" + getTime() + "] 낙상이 감지되었습니다. 괜찮으신가요?");
+        builder.setTitle("낙상 감지");
+        builder.setMessage("[" + getTime() + "] 낙상이 감지되었습니다. 괜찮으신가요?");
         builder.setTitle(title);
         builder.setMessage(message);
-
-        Log.d(TAG, "응답 응답" + flag_naksang.get());
         builder.setPositiveButton(yesBtn, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -872,9 +829,11 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             Log.d(TAG, "Message: " + message);
             // 전송
             SmsManager smsManager = SmsManager.getDefault();
-            smsManager.sendTextMessage(parentsPhone.trim(), null, message, null, null);
+            smsManager.sendTextMessage(parentsPhone, null, message, null, null);
+            Log.d(TAG, "Message: 전송완료");
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }
