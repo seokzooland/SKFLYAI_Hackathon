@@ -444,9 +444,11 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                                 count++;
                             }
 
-                            if (count == 0){
-                                flag_out.set(0);//System.out.println(count);
+                            if (count ==0){
+                                flag_out.set(0);
                             }
+
+
                         }
                     }
                 }
@@ -610,7 +612,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             }
         };
         Log.d(TAG,"i_pathtime : " + i_pathtime);
-        timer.schedule(task, i_pathtime*10 + 10000);
+        timer.schedule(task, i_pathtime * 10000);
     }
     // 타이머 알림
     public TimerTask Dialog(){
@@ -663,7 +665,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 }
                 else if (flag_timer.get() == 1){
                     //Log.d(TAG, "10초 지나고 yes 버튼 누르고 나서 다시 0으로 바꿈" + flag_timer.get());
-                    flag_out.set(1);
+//                    flag_timer.set(1);
                 }
 //                 경로이탈
                 if (flag_out.get() == 0){
@@ -687,7 +689,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             }
         };
         Timer mTimer = new Timer();
-        mTimer.schedule(task, 10000);
+        mTimer.schedule(task, 300000);
     }
     private class MyThread extends AsyncTask<Integer, Integer, Integer> {
         @Override
