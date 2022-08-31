@@ -2,7 +2,7 @@ import mimetypes
 # import os module
 import os
 # Import HttpResponse module
-from django.http.response import HttpResponse
+from django.http import HttpResponse, Http404
 
 
 def download_file(request):
@@ -13,12 +13,10 @@ def download_file(request):
     # Define the full file path
     filepath = BASE_DIR + '/downloadapp/files/' + filename
     # Open the file for reading content
-    path = open(filepath, 'r')
-    # Set the mime type
-    mime_type, _ = mimetypes.guess_type(filepath)
-    # Set the return value of the HttpResponse
-    response = HttpResponse(path, content_type=mime_type)
-    # Set the HTTP header for sending to browser
-    response['Content-Disposition'] = "attachment; filename=%s" % filename
-    # Return the response value
-    return response
+    if os.path.exists(filepath):
+        with open(filepath, 'rb') as fh:
+            response = HttpResponse(fh.read(), content_type="application/force_download")
+            response['Content-Disposition'] = 'inline; filename=' + os.path.basename(filepath)
+            return response
+        # If file is not exists
+    raise Http404
