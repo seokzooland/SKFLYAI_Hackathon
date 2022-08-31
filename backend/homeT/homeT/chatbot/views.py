@@ -1,7 +1,6 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
-from .chatbot_model_v1 import chatbot_model
 from .chatbot_model_v5 import chatbot_model5
 
 
