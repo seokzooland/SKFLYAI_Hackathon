@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     EditText ID, PW;
     Button LoginButton, RegisterButton;
 
-    public String userID;
-    public String userPW;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,13 +41,14 @@ public class MainActivity extends AppCompatActivity {
 
         ID = (EditText) findViewById(R.id.et_id);
         PW = (EditText) findViewById(R.id.et_pw);
+
+        ID.setText("xodn");
+        PW.setText("1234");
         // 로그인 버튼
         LoginButton = (Button) findViewById(R.id.btn_register);
         // 회원가입 버튼
         RegisterButton = (Button)findViewById(R.id.btn_goRegister);
 
-        ID.setText("wltn");
-        PW.setText("1234");
         initMyAPI(BASE_URL);
 
         RegisterButton.setOnClickListener(new View.OnClickListener(){
@@ -70,11 +69,11 @@ public class MainActivity extends AppCompatActivity {
 
         // 로그인 버튼 클릭
         LoginButton.setOnClickListener(new View.OnClickListener() {
-           @Override
-           public void onClick(View v) {
-               loginMe();
-           }
-       });
+            @Override
+            public void onClick(View v) {
+                loginMe();
+            }
+        });
     }
 
     private void initMyAPI(String baseUrl) {
@@ -88,8 +87,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void loginMe() {
-        userID = ID.getText().toString();
-        userPW = PW.getText().toString();
+        String userID = ID.getText().toString();
+        String userPW = PW.getText().toString();
         Call<GetPost> getCall = mMyAPI.gets_accounts_login(userID, userPW);
 
         getCall.enqueue(new Callback<GetPost>() {
@@ -103,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     String userID = element.getAsJsonObject().get("userID").getAsString();
                     String userName = element.getAsJsonObject().get("userName").getAsString();
                     String userAddress = element.getAsJsonObject().get("userAddress").getAsString();
+                    String parentsPhone = element.getAsJsonObject().get("parentsPhone").getAsString();
 
                     Toast.makeText((MainActivity.this), userName + "님 반갑습니다.", Toast.LENGTH_LONG).show();
                     Intent intent = new Intent(getApplicationContext(), Home.class);
@@ -110,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
                     intent.putExtra("userID", userID);
                     intent.putExtra("userName", userName);
                     intent.putExtra("userAddress", userAddress);
+                    intent.putExtra("parentsPhone", parentsPhone);
+
 
                     startActivity(intent);
 
@@ -122,6 +124,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
     }
 };
-

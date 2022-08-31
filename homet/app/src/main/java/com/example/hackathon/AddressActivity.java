@@ -18,7 +18,7 @@ import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 public class AddressActivity extends AppCompatActivity {
-    private static String IP_ADDRESS = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io/accounts";
+    private static String IP_ADDRESS = "http://20.249.89.149:8000/accounts";
 
     public WebView SearchAddress;
     private ProgressBar ProgressBar;

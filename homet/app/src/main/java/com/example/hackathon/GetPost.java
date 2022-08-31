@@ -11,9 +11,13 @@ public class GetPost {
 
     private String userName;
 
-   // private int userBirth;
+    private int userBirth;
 
     private String userAddress;
+
+    private String userPhone;
+
+    private String parentsPhone;
 
     private  String stt_Text;
 
@@ -57,6 +61,14 @@ public class GetPost {
 
     public String getStt_Text(){
         return stt_Text;
+    }
+
+    public String postPhone(String s) {
+        return userPhone = s;
+    }
+
+    public String postPhone2(String s) {
+        return parentsPhone = s;
     }
 
 }
