@@ -1,18 +1,31 @@
 package com.example.hackathon;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.service.voice.VoiceInteractionSession;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -33,6 +46,7 @@ public class SplashActivity extends AppCompatActivity {
             }
         },2000);
     }
+
 }
 
         //LoginButton = (Button) findViewById(R.id.btn_register);

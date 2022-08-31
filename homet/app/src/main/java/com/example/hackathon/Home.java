@@ -60,8 +60,9 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     String API_KEY = "l7xxf6f2a8d1177e4fcda307e964108a8fb0";
     private static final int GPS_ENABLE_REQUEST_CODE = 2001;
     private static final int PERMISSIONS_REQUEST_CODE = 100;
-    String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.INTERNET, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE,
+    private String[] REQUIRED_PERMISSIONS = {Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_BACKGROUND_LOCATION, Manifest.permission.INTERNET, Manifest.permission.SEND_SMS, Manifest.permission.READ_PHONE_STATE,
             Manifest.permission.RECEIVE_SMS};
+    private List permissionList;
 
     // T Map Tracking Mode
     private boolean m_bTrackingMode = true;
@@ -139,11 +140,11 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     protected void onCreate(Bundle savedInstanceState)  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        if (!checkLocationServicesStatus()) {
-            showDialogForLocationServiceSetting();
-        } else {
-            checkRunTimePermission();
-        }
+//        if (!checkLocationServicesStatus()) {
+//            showDialogForLocationServiceSetting();
+//        } else {
+//            checkRunTimePermission();
+//        }
         Intent intent = getIntent();
         userAddress = intent.getStringExtra("userAddress");
         parentsPhone = intent.getStringExtra("parentsPhone");
@@ -210,10 +211,9 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         tmapgps.OpenGps();
     }
 
-    ;
 
     void checkRunTimePermission() {
-
+        permissionList = new ArrayList<>();
         //런타임 퍼미션 처리
         // 1. 위치 퍼미션을 가지고 있는지 체크합니다.
         int hasFineLocationPermission = ContextCompat.checkSelfPermission(Home.this,
@@ -229,7 +229,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
                 // 3-2. 요청을 진행하기 전에 사용자가에게 퍼미션이 필요한 이유를 설명해줄 필요가 있습니다.
                 Toast.makeText(Home.this, "이 앱을 실행하려면 위치 접근 권한이 필요합니다.", Toast.LENGTH_LONG).show();
                 // 3-3. 사용자게에 퍼미션 요청을 합니다. 요청 결과는 onRequestPermissionResult에서 수신됩니다.
-                ActivityCompat.requestPermissions(Home.this,  REQUIRED_PERMISSIONS,
+                ActivityCompat.requestPermissions(Home.this, (String[]) permissionList.toArray(new String[permissionList.size()]),
                         PERMISSIONS_REQUEST_CODE);
             } else {
                 // 4-1. 사용자가 퍼미션 거부를 한 적이 없는 경우에는 퍼미션 요청을 바로 합니다.
@@ -240,30 +240,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
         }
     }
 
-    //여기부터는 GPS 활성화를 위한 메소드들
-    private void showDialogForLocationServiceSetting() {
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(Home.this);
-        builder.setTitle("위치 서비스 비활성화");
-        builder.setMessage("앱을 사용하기 위해서는 위치 서비스가 필요합니다.\n"
-                + "위치 설정을 수정하시겠습니까?");
-        builder.setCancelable(true);
-        builder.setPositiveButton("설정", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                Intent callGPSSettingIntent
-                        = new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                startActivityForResult(callGPSSettingIntent, GPS_ENABLE_REQUEST_CODE);
-            }
-        });
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-        builder.create().show();
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
