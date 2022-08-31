@@ -1,29 +1,39 @@
-import pandas as pd
-import torch
-import random
 import os
-from sentence_transformers import SentenceTransformer
-from sklearn.metrics.pairwise import cosine_similarity
+import torch
+from transformers import PreTrainedTokenizerFast, GPT2LMHeadModel
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
-class Chatbot:
+Q_TKN = "<usr>"
+A_TKN = "<sys>"
+BOS = '</s>'
+EOS = '</s>'
+MASK = '<unused0>'
+SENT = '<unused1>'
+PAD = '<pad>'
 
-    def __init__(self):
-        if torch.cuda.is_available():
-            self.chatbot = SentenceTransformer('jhgan/ko-sroberta-multitask', device='cuda:0')
-        else:
-            self.chatbot = SentenceTransformer('jhgan/ko-sroberta-multitask')
-        
-        self.dataset = pd.read_csv('./data/dataset.csv')
-        self.dataset['embedding'] = self.dataset.Q.map(lambda question: list(self.chatbot.encode(question)))
+
+class Chatbot:
     
-    def predict(self, question):
-        encoded = self.chatbot.encode(question)
-        self.dataset['similarity'] = self.dataset.embedding.map(lambda sim: cosine_similarity([encoded], [sim]).squeeze())
-        
-        answers = self.dataset[self.dataset.similarity == self.dataset.similarity.max()]
-        answer = answers.iloc[random.randint(0, answers.shape[0] - 1)]
-        
-        return answer.A
+    def __init__(self) -> None:
+        self.koGPT2_TOKENIZER = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2",
+                                                                    bos_token=BOS, eos_token=EOS, unk_token='<unk>',
+                                                                    pad_token=PAD, mask_token=MASK)
+        self.torch_model5 = GPT2LMHeadModel.from_pretrained('./model.pt')
+
+
+    def answer(self, question):
+        with torch.no_grad():       
+            input_ids = self.koGPT2_TOKENIZER.encode(Q_TKN + question + SENT + A_TKN)
+            
+            gen_ids = self.torch_model5.generate(torch.tensor([input_ids]),
+                                max_length=128,
+                                repetition_penalty=1.0,
+                                top_p=0.9,
+                                do_sample=True)
+            
+            a_start_idx = torch.where(gen_ids[0] == torch.tensor(4))[0].item() + 1      # 4: <sys>
+            answer = self.koGPT2_TOKENIZER.decode(gen_ids[0, a_start_idx : -1].tolist())
+
+        return answer
