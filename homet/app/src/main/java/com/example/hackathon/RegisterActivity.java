@@ -3,6 +3,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.webkit.JavascriptInterface;
@@ -29,10 +30,10 @@ public class RegisterActivity extends AppCompatActivity{
     private static final int SEARCH_ADDRESS_ACTIVITY = 10000;
 
     // server의 url을 적어준다
-    private final String BASE_URL = "https://5450-2001-e60-8753-a52f-45ad-2ab8-d938-98d4.jp.ngrok.io";
+    private final String BASE_URL = "http://20.249.89.149:8000";
     private Interface mMyAPI;
 
-    private EditText ID, PW, PWCheck, Name, Year, Month, Day, Address;
+    private EditText ID, PW, PWCheck, Name, Year, Month, Day, Address, Phone, Phone2;
     private Button IDCheckButton, RegisterButton;
 
     @Override
@@ -49,11 +50,11 @@ public class RegisterActivity extends AppCompatActivity{
         Month = findViewById(R.id.et_month);
         Day = findViewById(R.id.et_day);
         Address = findViewById(R.id.et_address);
+        Phone = findViewById(R.id.et_phone);
+        Phone2 = findViewById(R.id.et_parentsPhone);
 
         // address 터치 안되게 막기
         Address.setFocusable(false);
-
-
 
         RegisterButton = findViewById(R.id.btn_register);
         IDCheckButton = findViewById(R.id.btn_idck);
@@ -77,8 +78,8 @@ public class RegisterActivity extends AppCompatActivity{
                         if (response.isSuccessful()) {
                             Toast.makeText((RegisterActivity.this), "이미 사용 중인 아이디입니다.", Toast.LENGTH_LONG).show();
                         } else {
-                                Toast.makeText(RegisterActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_LONG).show();
-                                Log.d(TAG, "Status Code : " + response.code());
+                            Toast.makeText(RegisterActivity.this, "사용 가능한 아이디입니다.", Toast.LENGTH_LONG).show();
+                            Log.d(TAG, "Status Code : " + response.code());
                         }
                     }
 
@@ -157,6 +158,8 @@ public class RegisterActivity extends AppCompatActivity{
         String userName = Name.getText().toString();
         int userBirth = Integer.parseInt(Year.getText().toString() + Month.getText().toString() + Day.getText().toString());
         String userAddress = Address.getText().toString();
+        String userPhone = Phone.getText().toString();
+        String parentsPhone = Phone2.getText().toString();
 
         String pwcheck = PWCheck.getText().toString();
 
@@ -168,8 +171,11 @@ public class RegisterActivity extends AppCompatActivity{
         item.postID(userID);
         item.postPW(userPW);
         item.postName(userName);
-        //item.postBirth(userBirth);
+        item.postBirth(userBirth);
         item.postAddress(userAddress);
+        item.postPhone(userPhone);
+        item.postPhone2(parentsPhone);
+
 
         Call<GetPost> postCall = mMyAPI.posts(item);
 

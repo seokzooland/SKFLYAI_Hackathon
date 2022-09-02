@@ -35,10 +35,10 @@ public class GetPost {
         return userName = s;
     }
 
-    /* public int postBirth(int i) {
+    public int postBirth(int i) {
 
         return userBirth = i;
-    } */
+    }
 
     public String postAddress(String s) {
 

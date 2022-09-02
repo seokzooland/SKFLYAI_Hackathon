@@ -52,7 +52,7 @@ public class Chatbot_activity extends AppCompatActivity implements TextToSpeech.
 
     private String tts_text;
     private String stt_Text;
-    private TextToSpeech tts;
+    private static TextToSpeech tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

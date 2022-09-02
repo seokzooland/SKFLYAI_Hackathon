@@ -10,8 +10,8 @@
 
     <ScrollView
         android:id="@+id/scrollView"
-        android:layout_width="393dp"
-        android:layout_height="397dp"
+        android:layout_width="426dp"
+        android:layout_height="487dp"
         android:layout_marginTop="150dp"
         android:fillViewport="true"
         android:gravity="center"
@@ -64,8 +64,7 @@
                     android:background="@drawable/register"
                     android:text="중복 확인"
                     android:textColor="#FFFFFF"
-                    android:textSize="10sp"
-                     />
+                    android:textSize="10sp" />
 
             </LinearLayout>
 
@@ -83,8 +82,8 @@
                 android:id="@+id/et_pwck"
                 android:layout_width="260dp"
                 android:layout_height="43dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/white"
                 android:ems="10"
@@ -108,8 +107,8 @@
                 android:id="@+id/et_pw"
                 android:layout_width="260dp"
                 android:layout_height="43dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/white"
                 android:ems="10"
@@ -133,8 +132,8 @@
                 android:id="@+id/et_name"
                 android:layout_width="260dp"
                 android:layout_height="43dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/white"
                 android:ems="10"
@@ -163,13 +162,13 @@
                     android:id="@+id/et_year"
                     android:layout_width="70dp"
                     android:layout_height="43dp"
-                    android:layout_marginTop="5dp"
                     android:layout_marginStart="68dp"
+                    android:layout_marginTop="5dp"
                     android:background="@drawable/radius"
                     android:backgroundTint="@color/white"
                     android:ems="10"
-                    android:hint="년도"
-                    android:inputType="textPersonName"
+                    android:hint=" 년도"
+                    android:inputType="number"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -182,8 +181,8 @@
                     android:background="@drawable/radius"
                     android:backgroundTint="@color/white"
                     android:ems="10"
-                    android:hint="월"
-                    android:inputType="textPersonName"
+                    android:hint=" 월"
+                    android:inputType="number"
                     app:layout_constraintEnd_toStartOf="@+id/et_day"
                     app:layout_constraintHorizontal_bias="0.51"
                     app:layout_constraintStart_toEndOf="@+id/et_year"
@@ -198,8 +197,8 @@
                     android:background="@drawable/radius"
                     android:backgroundTint="@color/white"
                     android:ems="10"
-                    android:hint="일"
-                    android:inputType="textPersonName"
+                    android:hint=" 일"
+                    android:inputType="number"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
             </LinearLayout>
@@ -218,27 +217,76 @@
                 android:id="@+id/et_address"
                 android:layout_width="260dp"
                 android:layout_height="43dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/white"
                 android:ems="10"
+                android:hint=" 주소"
                 android:inputType="text"
-                android:minLines="2"
-                android:hint="주소" />
+                android:minLines="2" />
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_addressDetail"
                 android:layout_width="260dp"
                 android:layout_height="43dp"
-                android:layout_marginTop="5dp"
                 android:layout_gravity="center"
+                android:layout_marginTop="5dp"
                 android:background="@drawable/radius"
                 android:backgroundTint="@color/white"
+                android:hint=" 상세 주소"
                 android:inputType="text"
-                android:minLines="2"
-                android:hint="상세 주소"  />
+                android:minLines="2" />
 
+            <TextView
+                android:id="@+id/txt_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="70dp"
+                android:layout_marginTop="10dp"
+                android:text="전화번호"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/et_phone"
+                android:layout_width="260dp"
+                android:layout_height="43dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/radius"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:inputType="phone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/txt_parentsPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="70dp"
+                android:layout_marginTop="10dp"
+                android:text="보호자 전화번호"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/et_parentsPhone"
+                android:layout_width="260dp"
+                android:layout_height="43dp"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/radius"
+                android:backgroundTint="@color/white"
+                android:ems="10"
+                android:inputType="phone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.497"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
         </LinearLayout>
 
     </ScrollView>

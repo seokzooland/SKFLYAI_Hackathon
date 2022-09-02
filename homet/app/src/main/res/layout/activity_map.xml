@@ -11,35 +11,46 @@
     <RelativeLayout
         android:id="@+id/mapview"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_gravity="bottom"
         android:layout_weight="1"
         android:orientation="vertical">
 
-        <ImageButton
-            android:id="@+id/bt_gps"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
             android:layout_alignParentBottom="true"
-            android:layout_gravity="right"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="65dp"
-            android:background="#00FFFFFF"
-            android:src="@drawable/gps_button" />
+            android:layout_gravity="bottom"
+            android:layout_marginEnd="-17dp"
+            android:layout_marginBottom="20dp"
+            android:translationZ="1000dp">
 
-        <ImageButton
-            android:id="@+id/chatbot"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginEnd="183dp"
-            android:layout_marginBottom="42dp"
-            android:background="@android:color/transparent"
-            android:contentDescription="chatbot"
-            android:scaleType="fitCenter"
-            app:srcCompat="@drawable/chatbot" />
+            <ImageButton
+                android:id="@+id/bt_gps"
+                android:layout_width="49dp"
+                android:layout_height="47dp"
+                android:layout_gravity="right"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="42dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/gps_button"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageButton
+                android:id="@+id/chatbot"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="32dp"
+                android:background="@android:color/transparent"
+                android:contentDescription="chatbot"
+                android:scaleType="fitCenter"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:srcCompat="@drawable/chatbot" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </RelativeLayout>
 
     <LinearLayout
@@ -71,48 +82,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginStart="230dp"
+                android:layout_marginEnd="70dp"
                 android:background="@color/white"
                 android:text="안심 귀가"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/find" />
 
             <ImageButton
                 android:id="@+id/bt_findfac"
-                android:layout_width="40dp"
-                android:layout_height="47dp"
+                android:layout_width="37dp"
+                android:layout_height="42dp"
                 android:layout_gravity="center"
-                android:layout_marginStart="150dp"
                 android:background="@color/white"
                 android:scaleType="fitXY"
                 android:text="안전지킴이"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/bt_find"
+                app:layout_constraintHorizontal_bias="0.546"
+                app:layout_constraintStart_toEndOf="@+id/bt_home"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="1.0"
                 app:srcCompat="@drawable/poi" />
-
-            <ImageButton
-                android:id="@+id/bt_user"
-                android:layout_width="44dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginEnd="70dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                android:background="@color/white"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.0"
-                app:srcCompat="@drawable/bt_user" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </LinearLayout>
 
 </LinearLayout>
-
-
-
 
