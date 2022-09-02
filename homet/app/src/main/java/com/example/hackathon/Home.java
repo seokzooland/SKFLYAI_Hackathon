@@ -520,15 +520,19 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.bt_home:
+                myThread.cancel(true);
+                timer.cancel();
                 setBt_home();
                 break;
             case R.id.bt_findfac:
+                timer.cancel();
                 tmapview.removeTMapPath();
                 searchPOI(); // 마커
                 break;
             case R.id.bt_find:
                 isRun = true;
                 findPath();
+                startTimer();
                 myThread = (MyThread) new MyThread();
                 myThread.execute();
                 break;
@@ -584,7 +588,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             }
         };
         Log.d(TAG,"i_pathtime : " + i_pathtime);
-        timer.schedule(task, i_pathtime + 10000);
+        timer.schedule(task, i_pathtime + 15000);
     }
     // 타이머 알림
     public TimerTask Dialog(){
@@ -609,8 +613,8 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 flag_timer.set(1);
-                Toast.makeText(getApplicationContext(),"Clicked No", Toast.LENGTH_SHORT).show();
-//                startTimer();
+//                Toast.makeText(getApplicationContext(),"Clicked No", Toast.LENGTH_SHORT).show();
+                startTimer();
 
             }
         });
@@ -710,7 +714,7 @@ public class Home extends AppCompatActivity implements TMapGpsManager.onLocation
 
         protected void onProgressUpdate(Integer... values){
 //            System.out.println(values[0].intValue());
-            startTimer();
+//            startTimer();
             if (values[0].intValue() == 0){
                 anomalyDetection();
                 if (flag_out.get() ==0){
